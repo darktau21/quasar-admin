@@ -1,0 +1,7 @@
+{
+  "endOfLine": "lf",
+  "semi": true,
+  "tabWidth": 4,
+  "vueIndentScriptAndStyle": true,
+  "singleQuote": true
+}
