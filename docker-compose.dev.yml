@@ -30,4 +30,7 @@ services:
     ports:
       - 5430:${POSTGRES_PORT}
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - quasar-data:/var/lib/postgresql/data
+  
+volumes:
+  quasar-data:
