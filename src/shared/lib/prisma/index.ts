@@ -1,8 +1,3 @@
-const test = {
-    aboba: false,
-    down: true,
-    eboba: 'fds',
-};
+import { PrismaClient } from '@prisma/client';
 
-const t: number = 'aboba';
-console.log(t);
+export const prisma = new PrismaClient();

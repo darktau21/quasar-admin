@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model Session {
+  id      Int    @id @default(autoincrement())
+  session String @db.Uuid
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  isShown   Boolean  @map("is_shown")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("news")
+}
+
+model Characters {
+  id          Int     @id @default(autoincrement())
+  name        String
+  age         Int
+  description String
+  isShown     Boolean @map("is_shown")
+  avatar      String?
+}
