@@ -9,6 +9,7 @@
                 [$style.error]: props.state === 'error',
             },
         ]"
+        type="submit"
     >
         <slot />
     </button>

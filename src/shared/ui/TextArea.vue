@@ -1,7 +1,14 @@
 <template>
     <div :class="$style.container">
         <label :class="$style.label">{{ label }}</label>
-        <input :disabled :class="$style.input" :name :type v-model="model" />
+        <textarea
+            :disabled
+            :class="$style.input"
+            :name
+            v-model="model"
+            rows="10"
+            cols="100"
+        />
         <span :class="$style.error">{{ error }}</span>
         <!-- <ErrorMessage :class="$style.error" :name /> -->
     </div>
@@ -18,6 +25,7 @@
     }
 
     .input {
+        resize: none;
         grid-area: I;
         padding: 0.5rem;
         border-radius: 8px;
@@ -51,14 +59,14 @@
 </style>
 
 <script setup lang="ts">
+    import { useField } from 'vee-validate';
     const props = defineProps<{
         name: string;
-        type: string;
         label: string;
         disabled?: boolean;
         error?: string;
+        // initialValue?: string;
     }>();
-
     const model = defineModel<string>();
 
     const borderColor = computed(() =>

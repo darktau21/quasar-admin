@@ -6,6 +6,8 @@
                 name="password"
                 label="Пароль"
                 type="password"
+                v-model="password"
+                :error="errors.password"
             />
             <Submit :state="buttonState"> Войти </Submit>
         </form>
@@ -30,11 +32,17 @@
         password: string;
     };
     const validationSchema = toTypedSchema(Password);
-    const { handleSubmit, isSubmitting, setFieldError, resetForm, errors } =
-        useForm<LoginForm>({
-            validationSchema,
-        });
-
+    const {
+        handleSubmit,
+        isSubmitting,
+        setFieldError,
+        resetForm,
+        errors,
+        defineField,
+    } = useForm<LoginForm>({
+        validationSchema,
+    });
+    const [password] = defineField('password');
     const onSubmit = handleSubmit(async (values) => {
         try {
             await $fetch('/api/login', {

@@ -18,7 +18,6 @@ model News {
   id        Int      @id @unique
   title     String
   content   String
-  isShown   Boolean  @map("is_shown")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -31,6 +30,7 @@ model Teammate {
   quote       String?
   tags        String[]
   description String
+  isShown     Boolean  @map("is_shown")
   imageUrl    String?
 
   @@map("team")
@@ -42,6 +42,7 @@ model Winner {
   review       String?
   descripction String
   medals       Medal[]
+  isShown      Boolean @map("is_shown")
   imageUrl     String?
 
   @@map("winners")
