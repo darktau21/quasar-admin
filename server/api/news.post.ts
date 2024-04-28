@@ -5,7 +5,7 @@ type Body = Omit<News, 'id' | 'createdAt' | 'updatedAt'>;
 
 export default defineEventHandler(async (event) => {
     if (!event.context.isAuthorized) {
-        setResponseStatus(event, 401);
+        setResponseStatus(event, 403);
         return { status: 'fail' };
     }
 

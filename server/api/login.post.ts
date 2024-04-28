@@ -1,5 +1,6 @@
 import { prisma } from '~/shared/lib';
 import { v4 } from 'uuid';
+import { Password } from '~/shared/schemas';
 
 type LoginBody = {
     password?: string;
@@ -8,12 +9,22 @@ type LoginBody = {
 export default defineEventHandler(async (event) => {
     const body = await readBody<LoginBody>(event);
 
-    if (body.password === process.env.APP_AUTH_SECRET) {
-        console.log('success');
+    const passwordBody = Password.safeParse(body);
+
+    if (!passwordBody.success) {
+        setResponseStatus(event, 400);
+        return { status: 'fail' };
+    }
+
+    if (passwordBody.data.password === process.env.APP_AUTH_SECRET) {
         const session = v4();
         try {
             await prisma.session.create({ data: { session } });
-            setCookie(event, 'authKey', session);
+            setCookie(event, 'authKey', session, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 2629800,
+            });
             return { status: 'success' };
         } catch {
             throw createError({

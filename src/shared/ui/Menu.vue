@@ -13,5 +13,6 @@
         align-items: stretch;
         border-right: 2px solid rgb(0, 0, 0, 0.5);
         height: 100%;
+        background-color: #e8e8ec;
     }
 </style>

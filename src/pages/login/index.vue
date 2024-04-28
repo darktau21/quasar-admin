@@ -7,6 +7,7 @@
                 label="Пароль"
                 type="password"
             />
+            <Submit :state="buttonState"> Войти </Submit>
         </form>
     </main>
 </template>
@@ -21,21 +22,15 @@
 <script setup lang="ts">
     import { toTypedSchema } from '@vee-validate/zod';
     import { useForm } from 'vee-validate';
-    import { object, set, z } from 'zod';
+    import { Password } from '~/shared/schemas';
     import Input from '~/shared/ui/Input.vue';
+    import Submit from '~/shared/ui/Submit.vue';
 
     type LoginForm = {
         password: string;
     };
-    const validationSchema = toTypedSchema(
-        object({
-            password: z
-                .string({ message: 'Обязательное поле' })
-                .min(8, 'Минимальная длинна пароля - 8')
-                .max(32, 'Максимальная длинна пароля - 32'),
-        }),
-    );
-    const { handleSubmit, isSubmitting, setFieldError, resetForm } =
+    const validationSchema = toTypedSchema(Password);
+    const { handleSubmit, isSubmitting, setFieldError, resetForm, errors } =
         useForm<LoginForm>({
             validationSchema,
         });
@@ -53,4 +48,12 @@
             setFieldError('password', 'Неверный пароль');
         }
     });
+
+    const buttonState = computed(() =>
+        isSubmitting.value
+            ? 'submitting'
+            : errors.value.password
+              ? 'error'
+              : 'idle',
+    );
 </script>

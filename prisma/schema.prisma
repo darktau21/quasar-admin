@@ -10,10 +10,12 @@ datasource db {
 model Session {
   id      Int    @id @default(autoincrement())
   session String @db.Uuid
+
+  @@map("session")
 }
 
 model News {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @unique
   title     String
   content   String
   isShown   Boolean  @map("is_shown")
@@ -23,11 +25,31 @@ model News {
   @@map("news")
 }
 
-model Characters {
-  id          Int     @id @default(autoincrement())
+model Teammate {
+  id          Int      @id @default(autoincrement())
   name        String
-  age         Int
+  quote       String?
+  tags        String[]
   description String
-  isShown     Boolean @map("is_shown")
-  avatar      String?
+  imageUrl    String?
+
+  @@map("team")
+}
+
+model Winner {
+  id           Int     @id @default(autoincrement())
+  name         String
+  review       String?
+  descripction String
+  medals       Medal[]
+  imageUrl     String?
+
+  @@map("winners")
+}
+
+enum Medal {
+  MEDAL1
+  MEDAL2
+  MEDAL3
+  MEDAL4
 }
