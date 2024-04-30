@@ -5,7 +5,6 @@ import { News as NewsSchema } from '~/shared/schemas';
 type Body = Omit<News, 'createdAt' | 'updatedAt'>;
 
 export default defineEventHandler(async (event) => {
-    console.log(event.context.isAuthorized);
     if (!event.context.isAuthorized) {
         setResponseStatus(event, 403);
         return { status: 'fail' };

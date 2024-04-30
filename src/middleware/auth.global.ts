@@ -1,11 +1,14 @@
 import { prisma } from '~/shared/lib';
 
 export default defineNuxtRouteMiddleware(async (from) => {
-    if (import.meta.client || from.path === '/login') {
+    if (
+        import.meta.client ||
+        from.path === '/login' ||
+        from.path.startsWith('/api')
+    ) {
         return;
     }
     const key = useCookie('authKey');
-    console.log(key.value);
     if (!key.value) {
         return navigateTo('/login');
     }

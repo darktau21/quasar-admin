@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "nuxt build",
-        "dev": "nuxt dev",
+        "dev": "nuxt dev --host",
         "lint": "eslint --fix ./src/**/*.{ts,vue}",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
@@ -13,9 +13,11 @@
     "dependencies": {
         "@heroicons/vue": "^2.1.3",
         "@nuxt/eslint": "^0.3.7",
+        "@nuxt/image": "^1.6.0",
         "@prisma/client": "^5.12.1",
         "@vee-validate/zod": "^4.12.6",
         "cookie-universal-nuxt": "^2.2.2",
+        "minio": "^7.1.4",
         "nuxt": "^3.11.2",
         "primeicons": "^7.0.0",
         "uuid": "^9.0.1",

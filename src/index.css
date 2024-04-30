@@ -11,4 +11,5 @@ html {
 body {
     font-size: 1.8rem;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    overflow: hidden;
 }

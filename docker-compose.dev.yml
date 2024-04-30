@@ -9,6 +9,12 @@ services:
             - APP_PORT=${APP_PORT}
             - APP_AUTH_SECRET=${APP_AUTH_SECRET}
             - NODE_ENV=development
+            - S3_USER=${S3_USER}
+            - S3_PASSWORD=${S3_PASSWORD}
+            - S3_HOST=${S3_HOST}
+            - S3_PORT=${S3_PORT}
+            - S3_AVATARS_BUCKET=${S3_AVATARS_BUCKET}
+            - S3_PUBLIC_HOST=${S3_PUBLIC_HOST}
         ports:
             - ${APP_PORT}:3000
         volumes:
@@ -26,7 +32,23 @@ services:
         ports:
             - 5430:${POSTGRES_PORT}
         volumes:
-            - quasar-data:/var/lib/postgresql/data
-
-volumes:
-    quasar-data:
+            - ./data/db:/var/lib/postgresql/data
+    s3:
+        image: minio/minio:latest
+        container_name: quasar-s3
+        command: server --address 0.0.0.0:9000 --console-address ":9001" /data/
+        ports:
+            - '9000:9000'
+            - '9001:9001'
+        environment:
+            MINIO_ROOT_USER: ${S3_USER}
+            MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
+            MINIO_REGION: ru-west-1
+        volumes:
+            - ./data/files:/data
+        healthcheck:
+            test:
+                ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+            interval: 30s
+            timeout: 20s
+            retries: 3

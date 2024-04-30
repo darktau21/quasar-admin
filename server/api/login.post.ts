@@ -19,11 +19,16 @@ export default defineEventHandler(async (event) => {
     if (passwordBody.data.password === process.env.APP_AUTH_SECRET) {
         const session = v4();
         try {
-            await prisma.session.create({ data: { session } });
+            const currentSession = await prisma.session.create({
+                data: { session },
+            });
             setCookie(event, 'authKey', session, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 2629800,
+            });
+            await prisma.session.deleteMany({
+                where: { NOT: { id: currentSession.id } },
             });
             return { status: 'success' };
         } catch {

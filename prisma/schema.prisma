@@ -32,18 +32,22 @@ model Teammate {
   description String
   isShown     Boolean  @map("is_shown")
   imageUrl    String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("team")
 }
 
 model Winner {
-  id           Int     @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   name         String
   review       String?
   descripction String
   medals       Medal[]
-  isShown      Boolean @map("is_shown")
+  isShown      Boolean  @map("is_shown")
   imageUrl     String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   @@map("winners")
 }

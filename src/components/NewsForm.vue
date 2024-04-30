@@ -54,10 +54,10 @@
             })) ?? {};
         if (data) {
             setValues(data);
-            // updatedAt.value = Intl.DateTimeFormat('ru').format(
-            //     Date.parse(data.updatedAt),
-            // );
-            updatedAt.value = data.updatedAt;
+            updatedAt.value = Intl.DateTimeFormat('ru').format(
+                Date.parse(data.updatedAt),
+            );
+            // updatedAt.value = data.updatedAt;
         }
     };
 
