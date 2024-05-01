@@ -17,11 +17,11 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const teammate = await prisma.teammate.findFirst({
+        const winner = await prisma.winner.findFirst({
             where: { id: +param },
         });
 
-        const imgName = `teammate-${teammate?.id}`;
+        const imgName = `winner-${winner?.id}`;
         await s3Client.putObject(
             'avatars',
             imgName,
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
             },
         );
 
-        await prisma.teammate.update({
+        await prisma.winner.update({
             data: {
                 imageUrl: `${process.env.S3_PUBLIC_HOST}/${process.env.S3_AVATARS_BUCKET}/${imgName}`,
             },

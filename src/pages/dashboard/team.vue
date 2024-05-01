@@ -14,7 +14,6 @@
                     quote: data.quote ?? undefined,
                     name: data.name,
                     description: data.description,
-                    isShown: data.isShown,
                     tags: data.tags,
                     imageUrl: data.imageUrl,
                 }"

@@ -15,10 +15,10 @@ export default defineEventHandler(async (event) => {
         if (!param) {
             return;
         }
-        await prisma.teammate.delete({ where: { id: +param } });
+        await prisma.winner.delete({ where: { id: +param } });
         await s3Client.removeObject(
             process.env.S3_AVATARS_BUCKET!,
-            `teammate-${param}`,
+            `winner-${param}`,
         );
         setResponseStatus(event, 204);
     } catch (e: unknown) {

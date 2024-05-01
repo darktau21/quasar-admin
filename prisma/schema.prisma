@@ -30,7 +30,6 @@ model Teammate {
   quote       String?
   tags        String[]
   description String
-  isShown     Boolean  @map("is_shown")
   imageUrl    String?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -39,15 +38,14 @@ model Teammate {
 }
 
 model Winner {
-  id           Int      @id @default(autoincrement())
-  name         String
-  review       String?
-  descripction String
-  medals       Medal[]
-  isShown      Boolean  @map("is_shown")
-  imageUrl     String?
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id          Int      @id @default(autoincrement())
+  name        String
+  review      String?
+  description String
+  medals      Medal[]
+  imageUrl    String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("winners")
 }

@@ -1,3 +1,4 @@
+import { Medal } from '@prisma/client';
 import { object, z } from 'zod';
 
 export const Password = object({
@@ -35,6 +36,27 @@ export const Teammate = object({
         .string({ message: 'Обязательное поле' })
         .min(2, 'Минимальная длинна - 2')
         .max(300, 'Максимальная длинна - 300'),
-    isShown: z.boolean().optional().default(true),
+    imageUrl: z.string().optional(),
+});
+
+export const Winner = object({
+    id: z.number().optional(),
+    name: z
+        .string({ message: 'Обязательное поле' })
+        .min(2, 'Минимальная длинна - 2')
+        .max(128, 'Максимальная длинна - 128'),
+    review: z
+        .string()
+        .min(2, 'Минимальная длинна - 2')
+        .max(500, 'Максимальная длинна - 500'),
+    medals: z
+        .array(z.nativeEnum(Medal))
+        .min(1, 'Минимум 1 медаль')
+        .max(3, 'Максимум 3 медали')
+        .optional(),
+    description: z
+        .string({ message: 'Обязательное поле' })
+        .min(2, 'Минимальная длинна - 2')
+        .max(300, 'Максимальная длинна - 300'),
     imageUrl: z.string().optional(),
 });

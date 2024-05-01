@@ -8,47 +8,42 @@
                 type="text"
                 :error="errors.name"
             />
-            <Input
-                v-model="quote"
-                label="Цитата"
-                name="quote"
-                type="text"
-                :error="errors.quote"
-            />
-            <div :class="$style.tagsList">
-                <h3>Тэги</h3>
-                <div
-                    :class="$style.tags"
-                    v-for="(field, idx) in fields"
-                    :key="field.key"
-                >
-                    <Input
-                        :label="`Тэг ${idx + 1}`"
-                        type="text"
-                        :class="$style.tagInput"
-                        :name="`tags[${idx}]`"
-                        v-model="field.value"
-                    />
-                    <Button
-                        variant="danger"
-                        @click="remove(idx)"
-                        :class="$style.tagButton"
-                    >
-                        <TrashIcon style="width: 2.4rem; height: 2.4rem" />
-                    </Button>
-                </div>
-                <Button
-                    v-if="fields.length < 5"
-                    style="justify-self: center"
-                    @click="push('')"
-                    >Добавить тэг</Button
-                >
-            </div>
+            <VueSelect
+                multiple
+                v-model="medals"
+                :reduce="reduceOptions"
+                placeholder="Выберите медали"
+                :searchable="false"
+                :class="$style.selector"
+                :options="options"
+            >
+                <template #option="{ label, icon }">
+                    <div :class="$style.option">
+                        <span>{{ label }}</span>
+                        <Medals :variant="icon" />
+                    </div>
+                </template>
+                <template #selected-option="{ label, icon }">
+                    <div :class="$style.option">
+                        <span>{{ label }}</span>
+                        <Medals :variant="icon" />
+                    </div>
+                </template>
+            </VueSelect>
+            <span :class="$style.err" v-show="errors.medals">{{
+                errors.medals
+            }}</span>
             <TextArea
                 label="Описание"
                 name="description"
                 v-model="description"
                 :error="errors.description"
+            />
+            <TextArea
+                label="Отзыв"
+                name="review"
+                v-model="review"
+                :error="errors.review"
             />
             <Submit :state="buttonState">{{
                 props.initial ? 'Обновить' : 'Добавить'
@@ -76,32 +71,63 @@
     </div>
 </template>
 <script setup lang="ts">
+    import VueSelect from 'vue-select';
     import { toTypedSchema } from '@vee-validate/zod';
     import { useFieldArray, useForm } from 'vee-validate';
     import { useToast } from 'vue-toast-notification';
     import { TrashIcon } from '@heroicons/vue/16/solid';
     import type { z } from 'zod';
-    import { Teammate } from '~/shared/schemas';
+    import { Teammate, Winner } from '~/shared/schemas';
     import Input from '~/shared/ui/Input.vue';
     import Submit from '~/shared/ui/Submit.vue';
     import TextArea from '~/shared/ui/TextArea.vue';
     import Button from '~/shared/ui/Button.vue';
+    import { Medal } from '@prisma/client';
+    import Medals from '~/shared/ui/Medals.vue';
     const validationSchema = toTypedSchema(
-        Teammate.omit({ id: true, imageUrl: true }),
+        Winner.omit({ id: true, imageUrl: true }),
     );
+    type Option = {
+        label: string;
+        icon: Medal;
+        value: Medal;
+    };
+    const reduceOptions = (option: Option) => option.value;
+    const options: Option[] = [
+        {
+            label: 'Медаль 1',
+            icon: Medal.MEDAL1,
+            value: Medal.MEDAL1,
+        },
+        {
+            label: 'Медаль 2',
+            icon: Medal.MEDAL2,
+            value: Medal.MEDAL2,
+        },
+        {
+            label: 'Медаль 3',
+            icon: Medal.MEDAL3,
+            value: Medal.MEDAL3,
+        },
+        {
+            label: 'Медаль 4',
+            icon: Medal.MEDAL4,
+            value: Medal.MEDAL4,
+        },
+    ];
     const props = defineProps<{
         initial?: {
             id: number;
             name: string;
-            quote: string | undefined;
-            tags: string[];
+            medals: Medal[];
             description: string;
+            review?: string;
             imageUrl: string | null;
         };
     }>();
     const $toast = useToast();
     const emit = defineEmits<{
-        (e: 'teammate-added'): void;
+        (e: 'winner-added'): void;
     }>();
 
     const {
@@ -115,14 +141,16 @@
     } = useForm({
         validationSchema,
         initialValues: {
-            quote: props.initial?.quote,
+            review: props.initial?.review,
+            medals: props.initial?.medals ?? [],
+
             ...props.initial,
-        } ?? { tags: [] },
+        } ?? { medals: [] },
     });
     const [name] = defineField('name');
     const [description] = defineField('description');
-    const [quote] = defineField('quote');
-    const { push, fields, remove } = useFieldArray<string>('tags');
+    const [review] = defineField('review');
+    const [medals] = defineField('medals');
     const isSuccess = ref(false);
     const fileInput = ref<HTMLInputElement | null>(null);
     const img = ref<File | null>(null);
@@ -131,10 +159,10 @@
         if (!props.initial) {
             return;
         }
-        await $fetch(`/api/team/${props.initial.id}`, {
+        await $fetch(`/api/top/${props.initial.id}`, {
             method: 'DELETE',
         });
-        emit('teammate-added');
+        emit('winner-added');
     };
 
     const onSubmit = handleSubmit(async (values: z.infer<typeof Teammate>) => {
@@ -148,12 +176,12 @@
 
         try {
             const res = props.initial
-                ? await $fetch('/api/team', {
+                ? await $fetch('/api/top', {
                       method: 'PATCH',
                       body: { ...values, id: props.initial.id },
                       cache: 'no-cache',
                   })
-                : await $fetch('/api/team', {
+                : await $fetch('/api/top', {
                       method: 'POST',
                       body: values,
                       cache: 'no-cache',
@@ -162,13 +190,13 @@
                 const id = res.data.id;
                 const data = new FormData();
                 data.append('avatar', img.value);
-                await $fetch(`/api/team/${id}`, { method: 'POST', body: data });
+                await $fetch(`/api/top/${id}`, { method: 'POST', body: data });
             }
             if (res.status === 'success') {
                 if (props.initial) {
                     setValues({
                         ...res.data,
-                        quote: res.data.quote ?? undefined,
+                        review: res.data.review ?? undefined,
                     });
                 } else {
                     resetForm();
@@ -178,7 +206,7 @@
                 props.initial ? 'Успешно обновлено' : 'Успешно добавлено',
                 { position: 'top' },
             );
-            emit('teammate-added');
+            emit('winner-added');
 
             isSuccess.value = true;
             img.value = null;
@@ -300,5 +328,20 @@
         object-fit: scale-down;
         width: 100%;
         height: auto;
+    }
+    .selector {
+        --vs-font-size: 1.8rem;
+    }
+    .option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+    .err {
+        color: rgb(255, 68, 51);
+        font-size: 1.4rem;
+        height: 1.8rem;
+        transition: visibility 0.3s ease-in;
     }
 </style>
