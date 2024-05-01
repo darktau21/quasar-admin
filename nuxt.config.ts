@@ -1,18 +1,26 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devtools: { enabled: true },
-    modules: ['@nuxt/eslint', '@nuxt/image'],
-    srcDir: 'src',
-    ssr: true,
-    serverDir: 'server/',
     dir: {
         public: '../public',
     },
-    typescript: {
-        typeCheck: true,
-    },
+    modules: ['@nuxt/eslint', '@nuxt/image'],
     routeRules: {
         '/': { redirect: '/dashboard/news' },
         '/dashboard': { redirect: '/dashboard/news' },
+    },
+    serverDir: 'server/',
+    srcDir: 'src',
+    ssr: true,
+    typescript: {
+        typeCheck: true,
+    },
+    vite: {
+        resolve: {
+            alias: {
+                '.prisma/client/index-browser':
+                    './node_modules/.prisma/client/index-browser.js',
+            },
+        },
     },
 });

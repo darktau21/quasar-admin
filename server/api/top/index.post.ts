@@ -1,13 +1,16 @@
 import type { Teammate, Winner } from '@prisma/client';
+
+import type { Medal } from '~/shared/medal';
+
 import { prisma } from '~/shared/lib';
 import { Winner as WinnerSchema } from '~/shared/schemas';
 
-type Body = Omit<Winner, 'createdAt' | 'updatedAt' | 'id'>;
+type Body = Omit<Winner, 'createdAt' | 'id' | 'updatedAt'>;
 
 export default defineEventHandler(
     async (
         event,
-    ): Promise<{ status: 'fail' } | { status: 'success'; data: Winner }> => {
+    ): Promise<{ data: Winner; status: 'success' } | { status: 'fail' }> => {
         if (!event.context.isAuthorized) {
             setResponseStatus(event, 403);
             return { status: 'fail' };
@@ -21,13 +24,16 @@ export default defineEventHandler(
         }
 
         try {
-            const res = await prisma.winner.create({
+            const data = await prisma.winner.create({
                 data: {
                     ...winner.data,
-                    medals: winner.data.medals ?? [],
+                    medals: (winner.data.medals as Medal[]) ?? ([] as Medal[]),
                 },
             });
-            return { status: 'success' as const, data: res };
+            return {
+                data: { ...data, medals: data?.medals as Medal[] },
+                status: 'success' as const,
+            };
         } catch (e: unknown) {
             console.log(e);
             return { status: 'fail' };

@@ -1,43 +1,44 @@
 <template>
     <form :class="$style.form" @submit="onSubmit">
-        <input name="id" v-model="id" hidden />
+        <input hidden name="id" v-model="id" />
         <Input
-            v-model="title"
+            :error="errors.title"
             label="Заголовок"
             name="title"
+            v-model="title"
             type="text"
-            :error="errors.title"
         />
         <TextArea
-            label="Содержание"
-            name="content"
-            v-model="content"
             :error="errors.content"
+            label="Содержание"
+            v-model="content"
+            name="content"
         />
         <span>Дата последнего обновления: {{ updatedAt }}</span>
         <Submit :state="buttonState">Обновить</Submit>
     </form>
 </template>
 <script setup lang="ts">
-    import Input from '~/shared/ui/Input.vue';
-    import TextArea from '~/shared/ui/TextArea.vue';
-    import Submit from '~/shared/ui/Submit.vue';
     import { toTypedSchema } from '@vee-validate/zod';
     import { useForm } from 'vee-validate';
-    import { News } from '~/shared/schemas';
     import { useToast } from 'vue-toast-notification';
+
+    import { News } from '~/shared/schemas';
+    import Input from '~/shared/ui/Input.vue';
+    import Submit from '~/shared/ui/Submit.vue';
+    import TextArea from '~/shared/ui/TextArea.vue';
     const validationSchema = toTypedSchema(News);
     const $toast = useToast();
 
     const props = defineProps<{ id: number }>();
     const {
-        handleSubmit,
-        errors,
         defineField,
-        setValues,
+        errors,
+        handleSubmit,
         isSubmitting,
-        setErrors,
         meta,
+        setErrors,
+        setValues,
     } = useForm({
         validationSchema,
     });
@@ -62,14 +63,14 @@
     };
 
     const onSubmit = handleSubmit(
-        async (values: { title: string; content: string }) => {
+        async (values: { content: string; title: string }) => {
             const notification = $toast.warning('Обновление новости', {
                 position: 'top',
             });
             try {
                 await $fetch('/api/news', {
-                    method: 'PATCH',
                     body: values,
+                    method: 'PATCH',
                 });
                 $toast.success('Успешно обновлено', { position: 'top' });
                 isSuccess.value = true;

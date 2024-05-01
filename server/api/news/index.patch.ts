@@ -1,4 +1,5 @@
 import type { News } from '@prisma/client';
+
 import { prisma } from '~/shared/lib';
 import { News as NewsSchema } from '~/shared/schemas';
 
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
             where: { id: news.data.id },
         });
 
-        return { status: 'success', data: res };
+        return { data: res, status: 'success' };
     } catch {
         return { status: 'fail' };
     }

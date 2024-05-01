@@ -1,5 +1,7 @@
 import type { Teammate } from '@prisma/client';
+
 import { z } from 'zod';
+
 import { prisma } from '~/shared/lib';
 import { Teammate as TeammateSchema } from '~/shared/schemas';
 
@@ -25,7 +27,7 @@ export default defineEventHandler(async (event) => {
             },
         });
 
-        return { status: 'success', data: res } as const;
+        return { data: res, status: 'success' } as const;
     } catch {
         return { status: 'fail' } as const;
     }

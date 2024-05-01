@@ -1,10 +1,10 @@
 <template>
     <svg
         v-if="props.variant === Medal.MEDAL1"
-        width="26"
+        fill="none"
         height="30"
         viewBox="0 0 211 253"
-        fill="none"
+        width="26"
         xmlns="http://www.w3.org/2000/svg"
     >
         <path
@@ -34,10 +34,10 @@
     </svg>
     <svg
         v-if="props.variant === Medal.MEDAL2"
-        width="26"
+        fill="none"
         height="30"
         viewBox="0 0 211 253"
-        fill="none"
+        width="26"
         xmlns="http://www.w3.org/2000/svg"
     >
         <path
@@ -67,10 +67,10 @@
     </svg>
     <svg
         v-if="props.variant === Medal.MEDAL3"
-        width="26"
+        fill="none"
         height="30"
         viewBox="0 0 211 253"
-        fill="none"
+        width="26"
         xmlns="http://www.w3.org/2000/svg"
     >
         <path
@@ -100,10 +100,10 @@
     </svg>
     <svg
         v-if="props.variant === Medal.MEDAL4"
-        width="26"
+        fill="none"
         height="30"
         viewBox="0 0 211 253"
-        fill="none"
+        width="26"
         xmlns="http://www.w3.org/2000/svg"
     >
         <path
@@ -133,7 +133,7 @@
     </svg>
 </template>
 <script setup lang="ts">
-    import { Medal } from '@prisma/client';
+    import { Medal } from '~/shared/medal';
     const props = defineProps<{
         variant: Medal;
     }>();

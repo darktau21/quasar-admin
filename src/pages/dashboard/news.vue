@@ -9,9 +9,9 @@
     </Panel>
 </template>
 <script setup lang="ts">
-    import Panel from '~/shared/ui/Panel.vue';
-    import Heading from '~/shared/ui/Heading.vue';
     import NewsForm from '~/components/NewsForm.vue';
+    import Heading from '~/shared/ui/Heading.vue';
+    import Panel from '~/shared/ui/Panel.vue';
     definePageMeta({
         layout: 'dashboard',
     });

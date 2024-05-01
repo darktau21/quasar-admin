@@ -2,58 +2,58 @@
     <div :class="$style.container">
         <form :class="$style.form" @submit="onSubmit">
             <Input
-                v-model="name"
+                :error="errors.name"
                 label="Имя"
                 name="name"
+                v-model="name"
                 type="text"
-                :error="errors.name"
             />
             <Input
-                v-model="quote"
+                :error="errors.quote"
                 label="Цитата"
                 name="quote"
+                v-model="quote"
                 type="text"
-                :error="errors.quote"
             />
             <div :class="$style.tagsList">
                 <h3>Тэги</h3>
                 <div
                     :class="$style.tags"
-                    v-for="(field, idx) in fields"
                     :key="field.key"
+                    v-for="(field, idx) in fields"
                 >
                     <Input
-                        :label="`Тэг ${idx + 1}`"
-                        type="text"
                         :class="$style.tagInput"
+                        :label="`Тэг ${idx + 1}`"
                         :name="`tags[${idx}]`"
                         v-model="field.value"
+                        type="text"
                     />
                     <Button
+                        :class="$style.tagButton"
                         variant="danger"
                         @click="remove(idx)"
-                        :class="$style.tagButton"
                     >
                         <TrashIcon style="width: 2.4rem; height: 2.4rem" />
                     </Button>
                 </div>
                 <Button
-                    v-if="fields.length < 5"
                     style="justify-self: center"
                     @click="push('')"
+                    v-if="fields.length < 5"
                     >Добавить тэг</Button
                 >
             </div>
             <TextArea
-                label="Описание"
-                name="description"
-                v-model="description"
                 :error="errors.description"
+                label="Описание"
+                v-model="description"
+                name="description"
             />
             <Submit :state="buttonState">{{
                 props.initial ? 'Обновить' : 'Добавить'
             }}</Submit>
-            <Button variant="danger" v-if="props.initial" @click="handleDelete">
+            <Button @click="handleDelete" v-if="props.initial" variant="danger">
                 Удалить
             </Button>
         </form>
@@ -67,8 +67,8 @@
                 <input
                     @change="handleFileChange"
                     accept="image/png,image/jpeg,image/webp"
-                    ref="fileInput"
                     hidden
+                    ref="fileInput"
                     type="file"
                 />
             </Button>
@@ -76,27 +76,29 @@
     </div>
 </template>
 <script setup lang="ts">
+    import type { z } from 'zod';
+
+    import { TrashIcon } from '@heroicons/vue/16/solid';
     import { toTypedSchema } from '@vee-validate/zod';
     import { useFieldArray, useForm } from 'vee-validate';
     import { useToast } from 'vue-toast-notification';
-    import { TrashIcon } from '@heroicons/vue/16/solid';
-    import type { z } from 'zod';
+
     import { Teammate } from '~/shared/schemas';
+    import Button from '~/shared/ui/Button.vue';
     import Input from '~/shared/ui/Input.vue';
     import Submit from '~/shared/ui/Submit.vue';
     import TextArea from '~/shared/ui/TextArea.vue';
-    import Button from '~/shared/ui/Button.vue';
     const validationSchema = toTypedSchema(
         Teammate.omit({ id: true, imageUrl: true }),
     );
     const props = defineProps<{
         initial?: {
+            description: string;
             id: number;
+            imageUrl: null | string;
             name: string;
             quote: string | undefined;
             tags: string[];
-            description: string;
-            imageUrl: string | null;
         };
     }>();
     const $toast = useToast();
@@ -105,24 +107,24 @@
     }>();
 
     const {
-        handleSubmit,
-        errors,
         defineField,
-        resetForm,
+        errors,
+        handleSubmit,
         isSubmitting,
-        setValues,
         meta,
+        resetForm,
+        setValues,
     } = useForm({
-        validationSchema,
         initialValues: {
             quote: props.initial?.quote,
             ...props.initial,
         } ?? { tags: [] },
+        validationSchema,
     });
     const [name] = defineField('name');
     const [description] = defineField('description');
     const [quote] = defineField('quote');
-    const { push, fields, remove } = useFieldArray<string>('tags');
+    const { fields, push, remove } = useFieldArray<string>('tags');
     const isSuccess = ref(false);
     const fileInput = ref<HTMLInputElement | null>(null);
     const img = ref<File | null>(null);
@@ -141,28 +143,28 @@
         const notification = $toast.warning(
             props.initial ? 'Обновление...' : 'Добавление...',
             {
-                position: 'top',
                 duration: 0,
+                position: 'top',
             },
         );
 
         try {
             const res = props.initial
                 ? await $fetch('/api/team', {
-                      method: 'PATCH',
                       body: { ...values, id: props.initial.id },
                       cache: 'no-cache',
+                      method: 'PATCH',
                   })
                 : await $fetch('/api/team', {
-                      method: 'POST',
                       body: values,
                       cache: 'no-cache',
+                      method: 'POST',
                   });
             if (res.status === 'success' && img.value) {
                 const id = res.data.id;
                 const data = new FormData();
                 data.append('avatar', img.value);
-                await $fetch(`/api/team/${id}`, { method: 'POST', body: data });
+                await $fetch(`/api/team/${id}`, { body: data, method: 'POST' });
             }
             if (res.status === 'success') {
                 if (props.initial) {

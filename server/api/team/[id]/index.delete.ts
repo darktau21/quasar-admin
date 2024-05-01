@@ -1,8 +1,9 @@
 import type { Teammate } from '@prisma/client';
+
 import { prisma } from '~/shared/lib';
 import { s3Client } from '~/shared/lib/s3';
 
-type Body = Omit<Teammate, 'createdAt' | 'updatedAt' | 'id'>;
+type Body = Omit<Teammate, 'createdAt' | 'id' | 'updatedAt'>;
 
 export default defineEventHandler(async (event) => {
     if (!event.context.isAuthorized) {

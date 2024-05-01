@@ -1,5 +1,4 @@
 import type { Teammate } from '@prisma/client';
-import type { PrismaClient } from '@prisma/client/extension';
 import type { z } from 'zod';
 import { prisma } from '~/shared/lib';
 import { Teammate as TeammateSchema } from '~/shared/schemas';

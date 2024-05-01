@@ -2,20 +2,20 @@
     <div :class="$style.container">
         <form :class="$style.form" @submit="onSubmit">
             <Input
-                v-model="name"
+                :error="errors.name"
                 label="Имя"
                 name="name"
+                v-model="name"
                 type="text"
-                :error="errors.name"
             />
             <VueSelect
-                multiple
-                v-model="medals"
-                :reduce="reduceOptions"
-                placeholder="Выберите медали"
-                :searchable="false"
                 :class="$style.selector"
                 :options="options"
+                :reduce="reduceOptions"
+                :searchable="false"
+                multiple
+                placeholder="Выберите медали"
+                v-model="medals"
             >
                 <template #option="{ label, icon }">
                     <div :class="$style.option">
@@ -34,21 +34,21 @@
                 errors.medals
             }}</span>
             <TextArea
-                label="Описание"
-                name="description"
-                v-model="description"
                 :error="errors.description"
+                label="Описание"
+                v-model="description"
+                name="description"
             />
             <TextArea
-                label="Отзыв"
-                name="review"
-                v-model="review"
                 :error="errors.review"
+                label="Отзыв"
+                v-model="review"
+                name="review"
             />
             <Submit :state="buttonState">{{
                 props.initial ? 'Обновить' : 'Добавить'
             }}</Submit>
-            <Button variant="danger" v-if="props.initial" @click="handleDelete">
+            <Button @click="handleDelete" v-if="props.initial" variant="danger">
                 Удалить
             </Button>
         </form>
@@ -62,8 +62,8 @@
                 <input
                     @change="handleFileChange"
                     accept="image/png,image/jpeg,image/webp"
-                    ref="fileInput"
                     hidden
+                    ref="fileInput"
                     type="file"
                 />
             </Button>
@@ -71,58 +71,62 @@
     </div>
 </template>
 <script setup lang="ts">
-    import VueSelect from 'vue-select';
+    import type { z } from 'zod';
+
+    import { TrashIcon } from '@heroicons/vue/16/solid';
     import { toTypedSchema } from '@vee-validate/zod';
     import { useFieldArray, useForm } from 'vee-validate';
+    import VueSelect from 'vue-select';
     import { useToast } from 'vue-toast-notification';
-    import { TrashIcon } from '@heroicons/vue/16/solid';
-    import type { z } from 'zod';
-    import { Teammate, Winner } from '~/shared/schemas';
+
+    import type { Teammate } from '~/shared/schemas';
+
+    import { Medal } from '~/shared/medal';
+    import { Winner } from '~/shared/schemas';
+    import Button from '~/shared/ui/Button.vue';
     import Input from '~/shared/ui/Input.vue';
+    import Medals from '~/shared/ui/Medals.vue';
     import Submit from '~/shared/ui/Submit.vue';
     import TextArea from '~/shared/ui/TextArea.vue';
-    import Button from '~/shared/ui/Button.vue';
-    import { Medal } from '@prisma/client';
-    import Medals from '~/shared/ui/Medals.vue';
     const validationSchema = toTypedSchema(
         Winner.omit({ id: true, imageUrl: true }),
     );
     type Option = {
-        label: string;
         icon: Medal;
+        label: string;
         value: Medal;
     };
     const reduceOptions = (option: Option) => option.value;
     const options: Option[] = [
         {
-            label: 'Медаль 1',
             icon: Medal.MEDAL1,
+            label: 'Медаль 1',
             value: Medal.MEDAL1,
         },
         {
-            label: 'Медаль 2',
             icon: Medal.MEDAL2,
+            label: 'Медаль 2',
             value: Medal.MEDAL2,
         },
         {
-            label: 'Медаль 3',
             icon: Medal.MEDAL3,
+            label: 'Медаль 3',
             value: Medal.MEDAL3,
         },
         {
-            label: 'Медаль 4',
             icon: Medal.MEDAL4,
+            label: 'Медаль 4',
             value: Medal.MEDAL4,
         },
     ];
     const props = defineProps<{
         initial?: {
-            id: number;
-            name: string;
-            medals: Medal[];
             description: string;
+            id: number;
+            imageUrl: null | string;
+            medals: Medal[];
+            name: string;
             review?: string;
-            imageUrl: string | null;
         };
     }>();
     const $toast = useToast();
@@ -131,21 +135,21 @@
     }>();
 
     const {
-        handleSubmit,
-        errors,
         defineField,
-        resetForm,
+        errors,
+        handleSubmit,
         isSubmitting,
-        setValues,
         meta,
+        resetForm,
+        setValues,
     } = useForm({
-        validationSchema,
         initialValues: {
-            review: props.initial?.review,
             medals: props.initial?.medals ?? [],
+            review: props.initial?.review,
 
             ...props.initial,
         } ?? { medals: [] },
+        validationSchema,
     });
     const [name] = defineField('name');
     const [description] = defineField('description');
@@ -169,28 +173,28 @@
         const notification = $toast.warning(
             props.initial ? 'Обновление...' : 'Добавление...',
             {
-                position: 'top',
                 duration: 0,
+                position: 'top',
             },
         );
 
         try {
             const res = props.initial
                 ? await $fetch('/api/top', {
-                      method: 'PATCH',
                       body: { ...values, id: props.initial.id },
                       cache: 'no-cache',
+                      method: 'PATCH',
                   })
                 : await $fetch('/api/top', {
-                      method: 'POST',
                       body: values,
                       cache: 'no-cache',
+                      method: 'POST',
                   });
             if (res.status === 'success' && img.value) {
                 const id = res.data.id;
                 const data = new FormData();
                 data.append('avatar', img.value);
-                await $fetch(`/api/top/${id}`, { method: 'POST', body: data });
+                await $fetch(`/api/top/${id}`, { body: data, method: 'POST' });
             }
             if (res.status === 'success') {
                 if (props.initial) {

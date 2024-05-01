@@ -1,4 +1,3 @@
-import { Medal } from '@prisma/client';
 import { object, z } from 'zod';
 
 export const Password = object({
@@ -9,19 +8,24 @@ export const Password = object({
 });
 
 export const News = object({
+    content: z
+        .string()
+        .min(10, 'Минимальная длинна новости - 10')
+        .max(300, 'Максимальная длинна новости - 300'),
     id: z.number().optional(),
     title: z
         .string({ message: 'Обязательное поле' })
         .min(2, 'Минимальная длинна заголовка - 2')
         .max(80, 'Максимальная длинна заголовка - 80'),
-    content: z
-        .string()
-        .min(10, 'Минимальная длинна новости - 10')
-        .max(300, 'Максимальная длинна новости - 300'),
 });
 
 export const Teammate = object({
+    description: z
+        .string({ message: 'Обязательное поле' })
+        .min(2, 'Минимальная длинна - 2')
+        .max(300, 'Максимальная длинна - 300'),
     id: z.number().optional(),
+    imageUrl: z.string().optional(),
     name: z
         .string({ message: 'Обязательное поле' })
         .min(2, 'Минимальная длинна - 2')
@@ -32,15 +36,20 @@ export const Teammate = object({
         .max(128, 'Максимальная длинна - 128')
         .optional(),
     tags: z.array(z.string()).optional(),
+});
+
+export const Winner = object({
     description: z
         .string({ message: 'Обязательное поле' })
         .min(2, 'Минимальная длинна - 2')
         .max(300, 'Максимальная длинна - 300'),
-    imageUrl: z.string().optional(),
-});
-
-export const Winner = object({
     id: z.number().optional(),
+    imageUrl: z.string().optional(),
+    medals: z
+        .array(z.enum(['MEDAL1', 'MEDAL2', 'MEDAL3', 'MEDAL4']))
+        .min(1, 'Минимум 1 медаль')
+        .max(3, 'Максимум 3 медали')
+        .optional(),
     name: z
         .string({ message: 'Обязательное поле' })
         .min(2, 'Минимальная длинна - 2')
@@ -49,14 +58,4 @@ export const Winner = object({
         .string()
         .min(2, 'Минимальная длинна - 2')
         .max(500, 'Максимальная длинна - 500'),
-    medals: z
-        .array(z.nativeEnum(Medal))
-        .min(1, 'Минимум 1 медаль')
-        .max(3, 'Максимум 3 медали')
-        .optional(),
-    description: z
-        .string({ message: 'Обязательное поле' })
-        .min(2, 'Минимальная длинна - 2')
-        .max(300, 'Максимальная длинна - 300'),
-    imageUrl: z.string().optional(),
 });

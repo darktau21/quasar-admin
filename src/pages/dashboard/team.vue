@@ -5,10 +5,8 @@
     </Panel>
     <Panel>
         <Heading>Члены команды</Heading>
-        <Panel v-if="team.length" v-for="data in team">
+        <Panel v-for="data in team" v-if="team.length">
             <TeammateForm
-                @teammate-added="execute"
-                :key="data.id"
                 :initial="{
                     id: data.id,
                     quote: data.quote ?? undefined,
@@ -17,18 +15,19 @@
                     tags: data.tags,
                     imageUrl: data.imageUrl,
                 }"
+                :key="data.id"
+                @teammate-added="execute"
             />
         </Panel>
         <div v-else :class="$style.notFound">Нет результатов</div>
     </Panel>
 </template>
 <script setup lang="ts">
-    import Panel from '~/shared/ui/Panel.vue';
+    import { useToast } from 'vue-toast-notification';
+
     import TeammateForm from '~/components/TeammateForm.vue';
     import Heading from '~/shared/ui/Heading.vue';
-    import type { Teammate } from '~/shared/schemas';
-    import type { z } from 'zod';
-    import { useToast } from 'vue-toast-notification';
+    import Panel from '~/shared/ui/Panel.vue';
     definePageMeta({
         layout: 'dashboard',
     });
@@ -38,9 +37,9 @@
     const handleError = () =>
         $toast.error('Ошибка запроса', { position: 'top' });
     const { data: resp, execute } = await useFetch(() => '/api/team', {
+        cache: 'no-cache',
         onRequestError: handleError,
         onResponseError: handleError,
-        cache: 'no-cache',
     });
 
     const team = computed(() => resp.value?.data ?? []);

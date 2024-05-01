@@ -15,5 +15,5 @@ RUN npm run build
 
 FROM node:21-alpine3.18 as prod
 WORKDIR /app
-COPY --from=loader /app/.output ./
-RUN ["node", "./.output/server/index.mjs"]
+COPY --from=builder /app ./
+CMD ["node", "/app/.output/server/index.mjs"]

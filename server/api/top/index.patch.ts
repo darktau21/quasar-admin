@@ -1,4 +1,7 @@
 import type { Winner } from '@prisma/client';
+
+import type { Medal } from '~/shared/medal';
+
 import { prisma } from '~/shared/lib';
 
 type Body = Omit<Winner, 'createdAt' | 'updatedAt'>;
@@ -16,14 +19,17 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const res = await prisma.winner.update({
+        const data = await prisma.winner.update({
             data: body,
             where: {
                 id: body.id,
             },
         });
 
-        return { status: 'success', data: res } as const;
+        return {
+            data: { ...data, medals: data?.medals as Medal[] },
+            status: 'success',
+        } as const;
     } catch {
         return { status: 'fail' } as const;
     }
