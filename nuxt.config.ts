@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     dir: {
         public: '../public',
     },
-    modules: ['@nuxt/eslint', '@nuxt/image'],
+    modules: ['@nuxt/eslint', '@nuxt/image', "nuxt-security"],
     routeRules: {
         '/': { redirect: '/dashboard/news' },
         '/dashboard': { redirect: '/dashboard/news' },
@@ -23,4 +23,9 @@ export default defineNuxtConfig({
             },
         },
     },
+    security: {
+        corsHandler: {
+            origin: '*'
+        }
+    }
 });
