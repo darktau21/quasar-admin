@@ -29,7 +29,7 @@ export default defineNuxtConfig({
         },
         headers: {
             contentSecurityPolicy: {
-                'img-src': [import.meta.env.S3_PUBLIC_HOST],
+                'img-src': [process.env.S3_PUBLIC_HOST!],
             },
         },
     },
