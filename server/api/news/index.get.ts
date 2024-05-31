@@ -11,5 +11,12 @@ export default defineEventHandler(async (event) => {
             updatedAt: 'desc',
         },
     });
+
+    data.forEach((item) => {
+        item.content = item.content
+            .split('\n')
+            .map((line) => `<p>${line.trim()}</p>`)
+            .join('');
+    });
     return { status: 'success', data };
 });
