@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
             where: { id: +param },
         });
 
-        const imgName = `teammate-${teammate?.id}`;
+        const imgName = `teammate-${teammate?.id}-${v4()}`;
         await s3Client.putObject(
             'avatars',
             imgName,

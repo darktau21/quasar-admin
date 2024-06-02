@@ -16,7 +16,7 @@ export const News = object({
     title: z
         .string({ message: 'Обязательное поле' })
         .min(2, 'Минимальная длинна заголовка - 2')
-        .max(37, 'Максимальная длинна заголовка - 37'),
+        .max(40, 'Максимальная длинна заголовка - 40'),
 });
 
 export const Teammate = object({

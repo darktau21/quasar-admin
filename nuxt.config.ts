@@ -29,8 +29,9 @@ export default defineNuxtConfig({
         },
         headers: {
             contentSecurityPolicy: {
-                'img-src': [process.env.S3_PUBLIC_HOST!],
+                'img-src': ["'self'", '*.js-dev.su', 'https: data:', 'blob: data:'],
             },
+            crossOriginEmbedderPolicy: false,
         },
     },
 });

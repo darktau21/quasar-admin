@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
             where: { id: +param },
         });
 
-        const imgName = `winner-${winner?.id}`;
+        const imgName = `winner-${winner?.id}-${v4()}`;
         await s3Client.putObject(
             'avatars',
             imgName,
