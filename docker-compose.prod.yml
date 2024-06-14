@@ -1,8 +1,6 @@
 services:
     app:
-        build:
-            context: .
-            target: prod
+        image: darktau21/kvazar-admin:1.1
         environment:
             - DB_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
             - APP_HOST=${APP_HOST}

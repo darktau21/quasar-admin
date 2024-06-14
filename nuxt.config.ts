@@ -29,7 +29,12 @@ export default defineNuxtConfig({
         },
         headers: {
             contentSecurityPolicy: {
-                'img-src': ["'self'", '*.js-dev.su', 'https: data:', 'blob: data:'],
+                'img-src': [
+                    "'self'",
+                    '*.kvazaroge.ru',
+                    'https: data:',
+                    'blob: data:',
+                ],
             },
             crossOriginEmbedderPolicy: false,
         },

@@ -33,7 +33,7 @@ export const Teammate = object({
     quote: z
         .string()
         .min(2, 'Минимальная длинна - 2')
-        .max(60, 'Максимальная длинна - 60')
+        .max(80, 'Максимальная длинна - 80')
         .optional(),
     tags: z.array(z.string()).optional(),
 });

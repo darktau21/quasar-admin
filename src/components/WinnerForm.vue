@@ -8,28 +8,49 @@
                 v-model="name"
                 type="text"
             />
-            <VueSelect
-                :class="$style.selector"
-                :options="options"
-                :reduce="reduceOptions"
-                :searchable="false"
-                multiple
-                placeholder="Выберите медали"
-                v-model="medals"
-            >
-                <template #option="{ label, icon }">
-                    <div :class="$style.option">
-                        <span>{{ label }}</span>
-                        <Medals :variant="icon" />
-                    </div>
-                </template>
-                <template #selected-option="{ label, icon }">
-                    <div :class="$style.option">
-                        <span>{{ label }}</span>
-                        <Medals :variant="icon" />
-                    </div>
-                </template>
-            </VueSelect>
+            <h3>Медали</h3>
+            <div :class="$style.medals">
+                <button
+                    @click.prevent="removeMedal(medal)"
+                    :class="$style.medal"
+                    v-for="medal in medals"
+                >
+                    <Medals :class="$style.medalIcon" :variant="medal" />
+                    <span :class="$style.remove">
+                        <TrashIcon />
+                    </span>
+                </button>
+            </div>
+            <div :class="$style.addMedals">
+                <button
+                    :class="$style.medalButton"
+                    @click.prevent="addMedal(Medal.MEDAL1)"
+                >
+                    <span>Медаль 1</span>
+                    <Medals :variant="Medal.MEDAL1" />
+                </button>
+                <button
+                    :class="$style.medalButton"
+                    @click.prevent="addMedal(Medal.MEDAL2)"
+                >
+                    <span>Медаль 2</span>
+                    <Medals :variant="Medal.MEDAL2" />
+                </button>
+                <button
+                    :class="$style.medalButton"
+                    @click.prevent="addMedal(Medal.MEDAL3)"
+                >
+                    <span>Медаль 3</span>
+                    <Medals :variant="Medal.MEDAL3" />
+                </button>
+                <button
+                    :class="$style.medalButton"
+                    @click.prevent="addMedal(Medal.MEDAL4)"
+                >
+                    <span>Медаль 4</span>
+                    <Medals :variant="Medal.MEDAL4" />
+                </button>
+            </div>
             <span :class="$style.err" v-show="errors.medals">{{
                 errors.medals
             }}</span>
@@ -73,14 +94,13 @@
 <script setup lang="ts">
     import type { z } from 'zod';
 
-    import { TrashIcon } from '@heroicons/vue/16/solid';
     import { toTypedSchema } from '@vee-validate/zod';
-    import { useFieldArray, useForm } from 'vee-validate';
-    import VueSelect from 'vue-select';
+    import { useForm } from 'vee-validate';
     import { useToast } from 'vue-toast-notification';
 
     import type { Teammate } from '~/shared/schemas';
 
+    import { TrashIcon } from '@heroicons/vue/16/solid';
     import { Medal } from '~/shared/medal';
     import { Winner } from '~/shared/schemas';
     import Button from '~/shared/ui/Button.vue';
@@ -91,34 +111,7 @@
     const validationSchema = toTypedSchema(
         Winner.omit({ id: true, imageUrl: true }),
     );
-    type Option = {
-        icon: Medal;
-        label: string;
-        value: Medal;
-    };
-    const reduceOptions = (option: Option) => option.value;
-    const options: Option[] = [
-        {
-            icon: Medal.MEDAL1,
-            label: 'Медаль 1',
-            value: Medal.MEDAL1,
-        },
-        {
-            icon: Medal.MEDAL2,
-            label: 'Медаль 2',
-            value: Medal.MEDAL2,
-        },
-        {
-            icon: Medal.MEDAL3,
-            label: 'Медаль 3',
-            value: Medal.MEDAL3,
-        },
-        {
-            icon: Medal.MEDAL4,
-            label: 'Медаль 4',
-            value: Medal.MEDAL4,
-        },
-    ];
+
     const props = defineProps<{
         initial?: {
             description: string;
@@ -154,7 +147,7 @@
     const [name] = defineField('name');
     const [description] = defineField('description');
     const [review] = defineField('review');
-    const [medals] = defineField('medals');
+    const [medals] = defineField('medals', { validateOnModelUpdate: true });
     const isSuccess = ref(false);
     const fileInput = ref<HTMLInputElement | null>(null);
     const img = ref<File | null>(null);
@@ -226,6 +219,20 @@
         }
     });
 
+    const addMedal = (medal: Medal) => {
+        if (!medals.value || medals.value.length >= 3) {
+            return;
+        }
+        medals.value.push(medal);
+    };
+
+    const removeMedal = (medal: Medal) => {
+        if (!medals.value) {
+            return;
+        }
+        medals.value.splice(medals.value.indexOf(medal), 1);
+    };
+
     const handleImgBtnClick = () => {
         URL.revokeObjectURL(imageUrl.value);
         if (!fileInput.value) {
@@ -282,6 +289,46 @@
     );
 </script>
 <style module>
+    .medals {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        width: 100%;
+        min-height: 3.5rem;
+        border: 2px solid #e6e6e6;
+        border-radius: 1rem;
+        flex-wrap: wrap;
+    }
+    /* .medalIcon {
+        min-width: 2.4rem;
+        min-height: 2.4rem;
+        flex: 1 0;
+    } */
+    .remove {
+        min-width: 2.2rem;
+    }
+    .medal {
+        display: flex;
+        gap: 2rem;
+        padding: 0.6rem;
+        align-items: center;
+        cursor: pointer;
+    }
+    .addMedals {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        width: 100%;
+        min-height: 3.5rem;
+        align-items: center;
+    }
+    .medalButton {
+        display: flex;
+        gap: 1rem;
+        padding: 0.6rem;
+        align-items: center;
+        cursor: pointer;
+    }
     .form {
         display: flex;
         flex-direction: column;
